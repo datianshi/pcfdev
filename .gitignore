@@ -18,5 +18,6 @@
 !/bin/setup-packer
 
 NERD_tree_*
+variables*
 
 /*.iml

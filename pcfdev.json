@@ -13,7 +13,8 @@
         "subnet_id": "",
         "vpc_id": "",
         "ssh_keypair_name": "",
-        "ssh_private_key_file": ""
+        "ssh_private_key_file": "",
+        "domain": ""
     },
     "builders": [
         {
@@ -23,7 +24,7 @@
             "instance_type": "c4.2xlarge",
             "ami_name": "{{user `distro`}}-v{{user `version`}}",
             "ami_description": "{{user `eula_url`}}",
-            "associate_public_ip_address": false,
+            "associate_public_ip_address": true,
             "security_group_id": "{{user `security_group_id`}}",
             "subnet_id": "{{user `subnet_id`}}",
             "vpc_id": "{{user `vpc_id`}}",
@@ -44,7 +45,8 @@
             }],
             "ssh_username": "ubuntu",
             "ssh_timeout": "20m",
-            "tags": {"Name": "v{{user `version`}}", "License":"{{user `eula_url`}}"}
+            "tags": {"Name": "v{{user `version`}}", "License":"{{user `eula_url`}}"},
+            "temporary_key_pair_name": "test-packer-temp"
         },
         {
             "type": "virtualbox-ovf",
@@ -116,7 +118,7 @@
                 "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config",
 
                 "mkdir -p /var/pcfdev/api",
-                "echo local.pcfdev.io > /var/pcfdev/domain",
+                "echo {{user `domain`}} > /var/pcfdev/domain",
                 "mv /tmp/manifest.yml /var/pcfdev/manifest.yml",
 
                 "mkdir -p /var/vcap/store",
@@ -157,7 +159,7 @@
                 "*) PROVIDER_TYPE=virtualbox ;;",
                 "esac",
 
-                "/var/pcfdev/provision local.pcfdev.io $(ip route get 1 | awk '{print $NF;exit}') redis,rabbitmq '' $PROVIDER_TYPE",
+                "/var/pcfdev/provision {{user `domain`}} $(ip route get 1 | awk '{print $NF;exit}') redis,rabbitmq '' $PROVIDER_TYPE",
                 "/var/pcfdev/stop"
             ]
         },

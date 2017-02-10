@@ -1,0 +1,7 @@
+packer build -only=amazon-ebs \
+       -var-file=variables.json \
+       pcfdev-base.json
+
+packer build -only=amazon-ebs \
+      -var-file=variables-pcf.json \
+      pcfdev.json
